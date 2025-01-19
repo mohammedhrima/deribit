@@ -1,0 +1,1 @@
+c++ main.cpp -I/home/mhrima/.brew/Cellar/openssl@3/3.4.0/include/ -L/home/mhrima/.brew/Cellar/openssl@3/3.4.0/lib -lssl -lcrypto -L/home/mhrima/.brew/Cellar/base64/1.5/bin
