@@ -1,0 +1,8 @@
+# Node.js dependencies
+node_modules/
+
+# package-lock.json
+package-lock.json
+
+# Executable files
+a.out
