@@ -41,3 +41,4 @@ ws.onerror = (error) => {
 ws.onclose = () => {
   console.log('WebSocket connection closed.');
 };
+

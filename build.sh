@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 
+# use Wall Werror Wextra
 CELLAR="/home/mhrima/.brew/Cellar"
 OPENSSL="$CELLAR/openssl@3/3.4.0"
 
