@@ -1,0 +1,9 @@
+services:
+  wolf_service:
+    container_name: deribit
+    image: deribit
+    build: .
+    volumes:
+      - ./code:/code
+
+#restart: always
