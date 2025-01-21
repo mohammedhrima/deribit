@@ -27,21 +27,21 @@ public:
         std::string ret;
         int i = 0;
         int j = 0;
-        unsigned char char_array_3[3];
-        unsigned char char_array_4[4];
+        unsigned char chars0[3];
+        unsigned char chars1[4];
 
         while (in_len--)
         {
-            char_array_3[i++] = *(bytes_to_encode++);
+            chars0[i++] = *(bytes_to_encode++);
             if (i == 3)
             {
-                char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-                char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-                char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-                char_array_4[3] = char_array_3[2] & 0x3f;
+                chars1[0] = (chars0[0] & 0xfc) >> 2;
+                chars1[1] = ((chars0[0] & 0x03) << 4) + ((chars0[1] & 0xf0) >> 4);
+                chars1[2] = ((chars0[1] & 0x0f) << 2) + ((chars0[2] & 0xc0) >> 6);
+                chars1[3] = chars0[2] & 0x3f;
 
                 for (i = 0; i < 4; i++)
-                    ret += base64_chars[char_array_4[i]];
+                    ret += base64_chars[chars1[i]];
                 i = 0;
             }
         }
@@ -49,15 +49,15 @@ public:
         if (i)
         {
             for (j = i; j < 3; j++)
-                char_array_3[j] = '\0';
+                chars0[j] = '\0';
 
-            char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-            char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-            char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-            char_array_4[3] = char_array_3[2] & 0x3f;
+            chars1[0] = (chars0[0] & 0xfc) >> 2;
+            chars1[1] = ((chars0[0] & 0x03) << 4) + ((chars0[1] & 0xf0) >> 4);
+            chars1[2] = ((chars0[1] & 0x0f) << 2) + ((chars0[2] & 0xc0) >> 6);
+            chars1[3] = chars0[2] & 0x3f;
 
             for (j = 0; j < i + 1; j++)
-                ret += base64_chars[char_array_4[j]];
+                ret += base64_chars[chars1[j]];
 
             while (i++ < 3)
                 ret += '=';
@@ -69,6 +69,74 @@ public:
 
 const std::string Base64::base64_chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+class Random
+{
+private:
+   static constexpr char base64_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+   static std::string base64Encode(const unsigned char *bytes_to_encode, size_t in_len)
+   {
+      std::string ret;
+      int i = 0;
+      int j = 0;
+      unsigned char chars0[3];
+      unsigned char chars1[4];
+
+      while (in_len--)
+      {
+         chars0[i++] = *(bytes_to_encode++);
+         if (i == 3)
+         {
+            chars1[0] = (chars0[0] & 0xfc) >> 2;
+            chars1[1] = ((chars0[0] & 0x03) << 4) + ((chars0[1] & 0xf0) >> 4);
+            chars1[2] = ((chars0[1] & 0x0f) << 2) + ((chars0[2] & 0xc0) >> 6);
+            chars1[3] = chars0[2] & 0x3f;
+
+            for (i = 0; i < 4; i++)
+               ret += base64_chars[chars1[i]];
+            i = 0;
+         }
+      }
+
+      if (i)
+      {
+         for (j = i; j < 3; j++)
+            chars0[j] = '\0';
+
+         chars1[0] = (chars0[0] & 0xfc) >> 2;
+         chars1[1] = ((chars0[0] & 0x03) << 4) + ((chars0[1] & 0xf0) >> 4);
+         chars1[2] = ((chars0[1] & 0x0f) << 2) + ((chars0[2] & 0xc0) >> 6);
+         chars1[3] = chars0[2] & 0x3f;
+
+         for (j = 0; j < i + 1; j++)
+            ret += base64_chars[chars1[j]];
+
+         while (i++ < 3)
+            ret += '=';
+      }
+
+      return ret;
+   }
+
+public:
+   static std::string key()
+   {
+      unsigned char random_bytes[16];
+      std::random_device rd;
+      std::mt19937 gen(rd());
+      std::uniform_int_distribution<> dis(0, 255);
+
+      for (int i = 0; i < 16; ++i)
+         random_bytes[i] = static_cast<unsigned char>(dis(gen));
+
+      return base64Encode(random_bytes, sizeof(random_bytes));
+   }
+};
+
+// Static member definition
+// constexpr char Random::base64_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
 
 class WebSocketClient
 {
@@ -236,7 +304,7 @@ public:
         X509_free(cert);
 
         // Perform WebSocket handshake
-        std::string ws_key = generateWebSocketKey();
+        std::string ws_key = Random::key(Z);
         std::ostringstream request;
         request << "GET " << path << " HTTP/1.1\r\n"
                 << "Host: " << server_url << "\r\n"
