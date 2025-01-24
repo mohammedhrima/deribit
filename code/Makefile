@@ -1,13 +1,7 @@
-CELLAR=$(HOME)/.brew/Cellar
-OPENSSL=$(CELLAR)/openssl@3/3.4.0
-NLOHMANN=$(CELLAR)/nlohmann-json/3.11.3
-
 SRC_FILES=main.cpp api.cpp request.cpp server.cpp utils.cpp
 OUT_EXEC=a.out
 
-INCLUDES=-I$(OPENSSL)/include  -I$(NLOHMANN)/include
-
-LIBS=-L$(OPENSSL)/lib -lssl -lcrypto
+LIBS= -lssl -lcrypto
 
 SANITIZE=-fsanitize=address -fsanitize=null -g3
 CXXFLAGS=-Wall -Wextra $(SANITIZE)
@@ -15,7 +9,7 @@ CXXFLAGS=-Wall -Wextra $(SANITIZE)
 OBJ_DIR=./objects
 OBJ_FILES=$(SRC_FILES:%.cpp=$(OBJ_DIR)/%.o)
 
-all: check_deps $(OUT_EXEC)
+all: $(OUT_EXEC)
 
 $(OUT_EXEC): $(OBJ_FILES)
 	@echo "Linking..."
@@ -36,22 +30,11 @@ run: $(OUT_EXEC)
 	@echo "Running the program..."
 	@./$(OUT_EXEC)
 
-check_deps:
+install:
 	@echo "Checking dependencies..."
-
-	# Check if OpenSSL exists
-	@if [ ! -d "$(OPENSSL)" ]; then \
-		echo "Error: OpenSSL is not installed at $(OPENSSL)"; \
-		exit 1; \
-	fi
-	
-	
-	# Check if Nlohmann JSON exists
-	@if [ ! -d "$(NLOHMANN)" ]; then \
-		echo "Error: Nlohmann JSON is not installed at $(NLOHMANN)"; \
-		exit 1; \
-	fi
-
+	sudo apt install libssl-dev nlohmann-json3-dev
 	@echo "All dependencies are installed!"
 
-.PHONY: all clean run check_deps
+re: clean all
+
+.PHONY: all clean run install re
