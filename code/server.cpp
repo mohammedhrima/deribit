@@ -54,18 +54,11 @@ void Server::serve_static_file(int client_fd, Request &req)
             filepath += req.url;
 
         file.open(filepath.c_str(), std::ios::in | std::ios::binary);
-        if (!file)
-        {
-            status = 404;
-            filepath = "./public/404.html";
-            file.open(filepath.c_str(), std::ios::in | std::ios::binary);
-        }
     }
     else
     {
-        status = 400;
-        filepath = "./public/400.html";
-        file.open(filepath.c_str(), std::ios::in | std::ios::binary);
+        sendResponse(client_fd, 400, generate_html(400, "method not allowed"), "text/html");
+        return;
     }
 
     std::ostringstream contentStream;

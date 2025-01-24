@@ -14,10 +14,9 @@ private:
 public:
     Api(std::string _path, std::string _url, size_t _port);
     ~Api();
+
     void init();
     void handshake();
-
-    // api handlers
     std::vector<uint8_t> mask_data(const std::string &message);
     int sendMessage(std::string message);
     int receiveMessage(std::string &message);

@@ -1,12 +1,11 @@
 CELLAR=$(HOME)/.brew/Cellar
 OPENSSL=$(CELLAR)/openssl@3/3.4.0
-BOOST=$(CELLAR)/boost/1.87.0
 NLOHMANN=$(CELLAR)/nlohmann-json/3.11.3
 
 SRC_FILES=main.cpp api.cpp request.cpp server.cpp utils.cpp
 OUT_EXEC=a.out
 
-INCLUDES=-I$(OPENSSL)/include -I$(BOOST)/include -I$(NLOHMANN)/include
+INCLUDES=-I$(OPENSSL)/include  -I$(NLOHMANN)/include
 
 LIBS=-L$(OPENSSL)/lib -lssl -lcrypto
 
@@ -46,11 +45,6 @@ check_deps:
 		exit 1; \
 	fi
 	
-	# Check if Boost exists
-	@if [ ! -d "$(BOOST)" ]; then \
-		echo "Error: Boost is not installed at $(BOOST)"; \
-		exit 1; \
-	fi
 	
 	# Check if Nlohmann JSON exists
 	@if [ ! -d "$(NLOHMANN)" ]; then \

@@ -2,7 +2,6 @@
 
 #include "./header.hpp"
 
-
 using json = nlohmann::json;
 typedef struct timeval timeval;
 typedef struct hostent hostent;
