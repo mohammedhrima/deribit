@@ -1,18 +1,78 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #495057;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <form action="/api/auth" method="POST">
-        <label for="userid">User ID:</label>
-        <input type="text" id="userid" name="client_id" required>
-        <br>
-        <label for="usersecret">User Secret:</label>
-        <input type="password" id="userscret" name="client_secret" required>
-        <br>
-        <button type="submit">Submit</button>
-    </form>
+    <div class="form-container">
+        <h1>Login</h1>
+        <form action="/api/login" method="POST">
+            <label for="userid">User ID:</label>
+            <input type="text" id="userid" name="client_id" required value="6ljNdSET">
+
+            <label for="usersecret">User Secret:</label>
+            <input type="password" id="userscret" name="client_secret" required value="R08jkZ_yC7yzHfrl1o0MXxIlSZwmJ-AaboLOJqcNCgM">
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 </body>
 </html>

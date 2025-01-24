@@ -1,4 +1,4 @@
-#include "header.hpp"
+#include "./includes/header.hpp"
 
 bool starts_with(const std::string &str, const std::string &prefix)
 {
@@ -48,7 +48,7 @@ std::map<std::string, std::string> parse_query_string(const std::string &query)
         std::string value = last_pair.substr(equal_pos + 1);
         params[key] = value;
     }
-    std::cout << RED << "queries: [" << query << "]" << std::endl;
+    std::cout << RED << "queries: <" << query << ">" << RESET << std::endl;
     return params;
 }
 
@@ -310,15 +310,13 @@ public:
     })";
 
         if (!sendMessage(message.str()))
-            throw Error("failed to sendMessage to api");
+            throw Error("authenticate: failed to sendMessage to api");
 
         std::string response;
         if (receiveMessage(response))
         {
             if (isError(response))
-            {
                 std::cout << RED << "Failed to authenticate" << RESET << std::endl;
-            }
             else
             {
                 std::cout << GREEN << "Authenticated succefully " << RESET << std::endl;
@@ -327,7 +325,167 @@ public:
         }
         return false;
     }
-    
+
+    bool place_order(const std::string &instrument, double amount, double price, const std::string &type = "limit")
+    {
+        std::ostringstream message;
+        message << R"({
+        "jsonrpc": "2.0",
+        "id": 2,
+        "method": "private/buy",
+        "params": {
+            "instrument_name": ")"
+                << instrument << R"(",
+            "amount": )"
+                << amount << R"(, "type": ")" << type << R"(", "price": )" << price << R"( 
+            }
+    })";
+
+        if (!sendMessage(message.str()))
+            throw Error("place_order: failed to sendMessage to api");
+
+        std::string response;
+        if (receiveMessage(response))
+        {
+            if (isError(response))
+                std::cout << RED << "Failed to place order" << RESET << std::endl;
+            else
+            {
+                std::cout << GREEN << "Order placed succefully " << RESET << std::endl;
+                std::cout << response << std::endl;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool modify_order(const std::string &order_id, double amount, double price)
+    {
+        std::ostringstream message;
+        message << R"({
+        "jsonrpc": "2.0",
+        "id": 4,
+        "method": "private/edit",
+        "params": {
+            "order_id": ")"
+                << order_id << R"(",
+            "amount": )"
+                << amount << R"(,
+            "price": )"
+                << price << R"(
+        }
+    })";
+
+        if (!sendMessage(message.str()))
+            throw Error("modify_order: failed to sendMessage to api");
+
+        std::string response;
+        if (receiveMessage(response))
+        {
+            if (isError(response))
+                std::cout << RED << "Failed to modify order" << RESET << std::endl;
+            else
+            {
+                std::cout << GREEN << "Order modified succefully " << RESET << std::endl;
+                std::cout << response << std::endl;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool cancel_order(const std::string &order_id)
+    {
+        std::ostringstream message;
+        message << R"({
+        "jsonrpc": "2.0",
+        "id": 3,
+        "method": "private/cancel",
+        "params": {
+            "order_id": ")"
+                << order_id << R"("
+        }
+    })";
+
+        if (!sendMessage(message.str()))
+            throw Error("cancel_order: failed to sendMessage to api");
+
+        std::string response;
+        if (receiveMessage(response))
+        {
+            if (isError(response))
+                std::cout << RED << "Failed to modify order" << RESET << std::endl;
+            else
+            {
+                std::cout << GREEN << "Order canceled succefully " << RESET << std::endl;
+                std::cout << response << std::endl;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool get_order_book(const std::string &instrument_name, int depth, std::string &response)
+    {
+        std::ostringstream message;
+        message << R"({
+        "jsonrpc": "2.0",
+        "id": 42,
+        "method": "public/get_order_book",
+        "params": {
+            "instrument_name": ")"
+                << instrument_name << R"(",
+            "depth": )"
+                << depth << R"(
+            }
+        })";
+
+        if (!sendMessage(message.str()))
+            throw Error("Failed to request order book");
+
+        if (receiveMessage(response))
+        {
+            if (isError(response))
+                std::cout << RED << "Failed to get order book" << RESET << std::endl;
+            else
+            {
+                std::cout << GREEN << "get order book succefully " << RESET << std::endl;
+                std::cout << response << std::endl;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool get_positions(const std::string &currency, std::string &response)
+    {
+        std::ostringstream message;
+        message << R"({
+            "jsonrpc": "2.0",
+            "id": 6,
+            "method": "private/get_positions",
+            "params": {
+                "currency": ")"
+                << currency << R"("
+            }
+        })";
+
+        if (!sendMessage(message.str()))
+            throw Error("Failed to request positions");
+
+        if (receiveMessage(response))
+        {
+            if (isError(response))
+                std::cout << RED << "Failed to get positions" << RESET << std::endl;
+            else
+            {
+                std::cout << GREEN << "get positions successfully" << RESET << std::endl;
+                std::cout << response << std::endl;
+                return true;
+            }
+        }
+        return false;
+    }
 };
 
 std::string generate_html(int status_code, const std::string &cause)
@@ -339,7 +497,7 @@ std::string generate_html(int status_code, const std::string &cause)
          << "<head>\n"
          << "    <meta charset=\"UTF-8\">\n"
          << "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
-         << "    <title>Error " << status_code << "</title>\n"
+         << "    <title>" << status_code << "</title>\n"
          << "    <style>\n"
          << "        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }\n"
          << "        .container { text-align: center; padding: 50px; }\n"
@@ -413,9 +571,7 @@ public:
     {
         size_t dot_pos = path.rfind('.');
         if (dot_pos == std::string::npos)
-        {
             return "application/octet-stream";
-        }
 
         std::string extension = path.substr(dot_pos);
 
@@ -437,6 +593,14 @@ public:
             return "image/svg+xml";
 
         return "application/octet-stream";
+    }
+
+    double to_double(const std::string &str)
+    {
+        std::istringstream iss(str);
+        double value = 0.0;
+        iss >> value;
+        return value;
     }
 
     void serve_static_file(int client_fd, Request &req)
@@ -552,16 +716,66 @@ public:
                         if (req.is_api)
                         {
                             // handle APi
-                            if (req.url == "/api/auth" && req.method == "POST")
+                            std::cout << "url:" << req.url << std::endl;
+                            std::cout << "method:" << req.method << std::endl;
+                            if (req.url == "/api/login" && req.method == "POST")
                             {
                                 std::map<std::string, std::string> params = parse_query_string(req.body);
-                                if (api.authenticate(std::string(params["client_id"]), std::string(params["client_secret"])))
+                                if (api.authenticate(params["client_id"], params["client_secret"]))
                                     sendResponse(client_fd, 200, generate_html(200, "logged in succefully"), "text/html");
                                 else
-                                    sendResponse(client_fd, 500, generate_html(500, "could not logged in"), "text/html");
+                                    sendResponse(client_fd, 500, generate_html(500, "Invalid credentials"), "text/html");
+                            }
+                            else if (req.url == "/api/place_order" && req.method == "POST")
+                            {
+                                std::map<std::string, std::string> params = parse_query_string(req.body);
+                                if (api.place_order(params["instrument"], to_double(params["amount"]), to_double(params["price"]), params["type"]))
+                                    sendResponse(client_fd, 200, generate_html(200, "order placed succefully"), "text/html");
+                                else
+                                    sendResponse(client_fd, 500, generate_html(500, "error placing order"), "text/html");
+                            }
+                            else if (req.url == "/api/modify_order" && req.method == "POST")
+                            {
+                                std::map<std::string, std::string> params = parse_query_string(req.body);
+                                if (api.modify_order(params["order_id"], to_double(params["amount"]), to_double(params["price"])))
+                                    sendResponse(client_fd, 200, generate_html(200, "order modified succefully"), "text/html");
+                                else
+                                    sendResponse(client_fd, 500, generate_html(500, "error modifying order"), "text/html");
+                            }
+                            else if (req.url == "/api/cancel_order" && req.method == "POST")
+                            {
+                                std::map<std::string, std::string> params = parse_query_string(req.body);
+                                if (api.cancel_order(params["order_id"]))
+                                    sendResponse(client_fd, 200, generate_html(200, "order canceled succefully"), "text/html");
+                                else
+                                    sendResponse(client_fd, 500, generate_html(500, "error canceling order"), "text/html");
+                            }
+                            else if (req.url == "/api/get_order_book" && req.method == "POST")
+                            {
+                                std::map<std::string, std::string> params;
+                                json j = json::parse(req.body);
+                                for (auto &element : j.items())
+                                    params[element.key()] = element.value();
+                                std::string response;
+                                if (api.get_order_book(params["instrument_name"], 3, response))
+                                    sendResponse(client_fd, 200, response, "application/json");
+                                else
+                                    sendResponse(client_fd, 500, generate_html(500, "error get order book"), "text/html");
+                            }
+                            else if (req.url == "/api/get_positions" && req.method == "POST")
+                            {
+                                std::map<std::string, std::string> params;
+                                json j = json::parse(req.body);
+                                for (auto &element : j.items())
+                                    params[element.key()] = element.value();
+                                std::string response;
+                                if (api.get_positions(params["currency"], response))
+                                    sendResponse(client_fd, 200, response, "application/json");
+                                else
+                                    sendResponse(client_fd, 500, generate_html(500, "error get position book"), "text/html");
                             }
                             else
-                                sendResponse(client_fd, 500, generate_html(500, "failed to login"), "text/html");
+                                sendResponse(client_fd, 500, generate_html(404, "Invalid request"), "text/html");
                         }
                         else
                         {

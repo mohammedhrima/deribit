@@ -51,14 +51,18 @@ const modify = {
   },
 };
 
-const get = {
+
+// get_order_book?depth=5&instrument_name=BTC-PERPETUAL
+const get_order_book = {
   jsonrpc: "2.0",
   id: 6,
-  method: "private/get_positions",
+  method: "public/get_order_book",
   params: {
-    currency: "BTC", // Replace with the currency of interest
+    instrument_name: "BTC-PERPETUAL",
+    depth: 5,
   },
-}
+};
+
 
 const view = {
   jsonrpc: "2.0",
@@ -71,10 +75,10 @@ const view = {
 
 ws.onopen = () => {
   console.log('WebSocket connection opened.');
-  
+
   console.log("authenticated");
   sendMessage(authMessage);
-  
+
   // console.log("place order");
   // sendMessage(order);
 
@@ -84,12 +88,12 @@ ws.onopen = () => {
   // console.log("modify");
   // sendMessage(modify)
 
-  // console.log("get");
-  // sendMessage(get)
+  console.log("get_order_book");
+  sendMessage(get_order_book)
 
 
-  console.log("view");
-  sendMessage(view)
+  // console.log("view");
+  // sendMessage(view)
 };
 
 ws.onmessage = (event) => {
@@ -97,11 +101,17 @@ ws.onmessage = (event) => {
 
   try {
     const response = JSON.parse(event.data);
-    if (response.error) console.error('Error response from server:', response.error);
-    else if (response.result) console.log('Successful response:', response.result);
+    if (response.error) {
+      console.error('Error response from server:', response.error);
+    } else if (response.result) {
+      console.log('Successful response:', response.result);
+    } else if (response.method && response.method === 'public/auth') {
+      console.log('Authentication successful:', response);
+    }
   }
   catch (error) { console.error('Failed to parse server message:', error.message); }
 };
+
 
 ws.onerror = (error) => {
   console.error('WebSocket error:', error.message);

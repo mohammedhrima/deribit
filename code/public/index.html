@@ -3,47 +3,71 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Beautiful Navigation</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to right, #f8f9fa, #e9ecef);
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+        font-size: 2rem;
+        color: #495057;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        width: 90%;
+        max-width: 400px;
+      }
+
+      .link {
+        display: block;
+        text-align: center;
+        padding: 15px;
+        font-size: 18px;
+        color: white;
+        background: #007bff;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+
+      .link:hover {
+        background: #0056b3;
+        color: #f8f9fa;
+      }
+    </style>
   </head>
   <body>
-    <h1>This is a form</h1>
-    <form id="myForm">
-      <label for="fname">First name:</label>
-      <input type="text" id="fname" name="fname" /><br /><br />
+    <h1>Welcome</h1>
+    <div class="container">
+      <a href="/login.html" class="link">Go to Login</a>
+      <a href="/place.html" class="link">Go to Place Order</a>
+      <a href="/modify.html" class="link">Go to Modify Order</a>
+      <a href="/cancel.html" class="link">Go to Cancel Order</a>
+      <a href="/order_book.html" class="link">Go to Order Book</a>
+      <a href="/position.html" class="link">Go to Position</a>
 
-      <label for="lname">Last name:</label>
-      <input type="text" id="lname" name="lname" /><br /><br />
-
-      <input type="submit" value="Submit" />
-    </form>
-
-    <script src="./index.js"></script>
-    <script>
-      document
-        .getElementById("myForm")
-        .addEventListener("submit", function (event) {
-          event.preventDefault(); // Prevent the default form submission
-
-          const formData = {
-            fname: document.getElementById("fname").value,
-            lname: document.getElementById("lname").value,
-          };
-
-          fetch("/auth", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              console.log("Success:", data);
-            })
-            .catch((error) => {
-              console.error("Error:", error);
-            });
-        });
-    </script>
+    </div>
   </body>
 </html>

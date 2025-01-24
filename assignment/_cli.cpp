@@ -30,7 +30,6 @@ typedef struct timeval timeval;
 typedef struct hostent hostent;
 typedef struct sockaddr_in sockaddr_in;
 
-
 class Error : public std::exception
 {
 private:
@@ -441,6 +440,23 @@ int main(void)
 
       client.connect();
       client.authenticate();
+
+#if 1
+      std::string ping_message = R"({"jsonrpc":"2.0","id":2,"method":"public/ping","params":{}})";
+      client.sendMessage(ping_message);
+
+      std::string response;
+      if (client.receive(response))
+      {
+         std::cout << "Response: " << response << std::endl;
+      }
+
+      // Disconnect gracefully
+      client.disconnect();
+
+      return 0;
+#endif
+
       // client.place_order("BTC-PERPETUAL", 10.0, 25000);
       std::string input;
       while (true)

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Get Order Book</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to right, #f8f9fa, #e9ecef);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .form-container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 400px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #495057;
+      }
+
+      label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: block;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      button {
+        width: 100%;
+        padding: 10px;
+        background: #007bff;
+        color: white;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      button:hover {
+        background: #0056b3;
+      }
+
+      #responseMessage,
+      #orderBookResults {
+        margin-top: 15px;
+        text-align: center;
+        padding: 10px;
+        border-radius: 5px;
+      }
+
+      .success {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      .error {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      .order-book-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 0;
+        border-bottom: 1px solid #f1f3f5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+        <h1>Get Order Book</h1>
+        <form id="orderBookForm">
+          <label for="instrument_name">Instrument:</label>
+          <input
+            type="text"
+            id="instrument_name"
+            name="instrument_name"
+            value="BTC-PERPETUAL"
+            required
+          />
+          <label for="depth">Depth:</label>
+          <input
+            type="number"
+            id="depth"
+            name="depth"
+            value="5"
+            min="1"
+            required
+          />
+          <button type="submit">Get Order Book</button>
+        </form>
+        <div id="responseMessage"></div>
+        <div id="orderBookResults">
+          <div id="bidsContainer"></div>
+          <div id="asksContainer"></div>
+        </div>
+      </div>
+
+    <script>
+      document
+        .getElementById("orderBookForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const instrumentName =
+            document.getElementById("instrument_name").value;
+          const depth = document.getElementById("depth").value;
+          const responseMessageEl = document.getElementById("responseMessage");
+          const bidsContainer = document.getElementById("bidsContainer");
+          const asksContainer = document.getElementById("asksContainer");
+
+          try {
+            const response = await fetch(`/api/get_order_book`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                instrument_name: instrumentName,
+                depth: depth,
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to get order book");
+            }
+
+            const res = await response.json();
+            const result = res.result;
+            console.log("result:", result);
+
+            // Clear previous results
+            responseMessageEl.textContent = "";
+            bidsContainer.innerHTML = "<h2>Bids</h2>";
+            asksContainer.innerHTML = "<h2>Asks</h2>";
+
+            // Display Bids
+            result.bids.forEach((bid) => {
+              const bidRow = document.createElement("div");
+              bidRow.className = "order-book-row";
+              bidRow.innerHTML = `
+          <span>Price: $${bid[0].toFixed(2)}</span>
+          <span>Quantity: ${bid[1].toLocaleString()}</span>
+        `;
+              bidsContainer.appendChild(bidRow);
+            });
+
+            // Display Asks
+            result.asks.forEach((ask) => {
+              const askRow = document.createElement("div");
+              askRow.className = "order-book-row";
+              askRow.innerHTML = `
+          <span>Price: $${ask[0].toFixed(2)}</span>
+          <span>Quantity: ${ask[1].toLocaleString()}</span>
+        `;
+              asksContainer.appendChild(askRow);
+            });
+
+            responseMessageEl.textContent =
+              "Order book retrieved successfully!";
+            responseMessageEl.className = "success";
+          } catch (error) {
+            responseMessageEl.textContent = `Error: ${error.message}`;
+            responseMessageEl.className = "error";
+            bidsContainer.innerHTML = "";
+            asksContainer.innerHTML = "";
+          }
+        });
+    </script>
+  </body>
+</html>

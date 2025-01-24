@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-FILE=${1:-"main.cpp"}
+FILE="main.cpp api.cpp request.cpp server.cpp utils.cpp"
 
 CELLAR="$HOME/.brew/Cellar"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/.brew/Cellar/boost/1.87.0/lib"

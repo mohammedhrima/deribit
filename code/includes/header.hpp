@@ -20,23 +20,9 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <nlohmann/json.hpp>
+#include "./macros.hpp"
 
-#define PORT 17000
-#define BUFFERSIZE 8192
-#define MAX_EPOLL_EVENTS 10
-// #define MAX_CONNECTIONS 10
 
-#define CLIENT_ID "6ljNdSET"
-#define CLIENT_SECRET "R08jkZ_yC7yzHfrl1o0MXxIlSZwmJ-AaboLOJqcNCgM"
-#define DERIBIT_URL "test.deribit.com"
-#define DERIBIT_PATH "/ws/api/v2"
-#define DERIBIT_PORT 443
-
-// COLORS
-#define GREEN "\033[0;32m"
-#define RED "\033[0;31m"
-#define CYAN "\033[0;36m"
-#define RESET "\033[0m"
 
 using json = nlohmann::json;
 
