@@ -13,7 +13,4 @@
 #define BUFFERSIZE 8192
 #define MAX_EPOLL_EVENTS 10
 
-
-
-
 #define DERIBIT_URL "test.deribit.com"
